@@ -1,19 +1,23 @@
 package Task;
 
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 // Реализация собственного пула потоков
 public class MainThredPolExecutor  {
     private LinkedList<Runnable> taskQueue;   // Список задач
-    private final Thread[] threads;           // Список потоков
-    private volatile boolean stopProc;        // Флаг стоп (volatile - убрал из кеша, что бы соблюсти многопоточность)
-    Object monitopr = new Object();           // Монитор
+    private final Thread[] threads;               // Список потоков
+    //private volatile boolean stopProc;          // Флаг стоп (volatile - убрал из кеша, что бы соблюсти многопоточность)
+    private AtomicBoolean stopProc;               // Флаг стоп (AtomicBoolean имеет методы, которые выполняют свои составные операции атомарно)
+    Object monitor = new Object();                // Монитор
 
     // Инициализация с количеством рабочих потоков
     public MainThredPolExecutor(int poolSize) {
         this.taskQueue = new LinkedList<>();
         this.threads = new Thread[poolSize];
-        this.stopProc = false;
+        //this.stopProc = false;
+        this.stopProc = new AtomicBoolean(false);
 
         for (int i=0; i<poolSize; i++){
             threads[i] = new Thread(new Worker());   // Создаём потоки с обработчиком задачи
@@ -23,23 +27,26 @@ public class MainThredPolExecutor  {
     }
 
     //Отправка задачи в очередь исполнения
-    public synchronized void execute(Runnable task){
-        if (stopProc){                               // Если уже выполнили  остановку потоков
-            shutdown();
+    public void execute(Runnable task){
+        if (stopProc.get()){                               // Если уже выполнили  остановку потоков
             throw new IllegalStateException("Новые задачи больше не принимаются");
         }
-        taskQueue.add(task);                         // Добавляем задачу
-        notify();                                    // Говорим ожидающим ( wait() ) потокам, что появилась новая задача
-        //monitopr.notify();                           // Говорим ожидающим ( wait() ) потокам, что появилась новая задача
-
+        synchronized (monitor) {
+            taskQueue.add(task);                         // Добавляем задачу
+            monitor.notify();                            // Говорим одному из ожидающих ( wait() ) потоку, что появилась новая задача
+            //monitor.notifyAll();                         // Говорим всем ожидающим ( wait() ) потокам, что появилась новая задача
+        }
     }
 
     // Остановка потока
     public synchronized void shutdown(){
-        stopProc = true;                           // Поставим флаг остановки
+        //stopProc = true;                           // Поставим флаг остановки
+        stopProc.set(true);                          // Поставим флаг остановки
+        //awaitTermination();
         for (Thread thread : threads){
-            thread.interrupt();                    // Останавливаем поток
+            thread.interrupt();                      // Останавливаем поток
         }
+        System.out.println(Thread.currentThread().getName()+"-Финиш");
     }
 
     public class Worker implements Runnable {
@@ -47,27 +54,27 @@ public class MainThredPolExecutor  {
         public void run() {
             while (true) {
                 Runnable task;
-                synchronized(monitopr) {                        //синхронизируемся
-                    while (taskQueue.isEmpty() && !stopProc) {  //пока список заданий пуст и нас не остановили,
+                synchronized(monitor) {                        //синхронизируемся
+                    while (taskQueue.isEmpty() && !stopProc.get()) {  //пока список заданий пуст и нас не остановили,
                         try {
-                            monitopr.wait();                  // ждем: блокирует выполнение текущего потока до тех пор,
-                                                               // пока на том же мониторе не будет вызван метод notify()
+                            monitor.wait();                  // ждем: блокирует выполнение текущего потока до тех пор,
+                                                             // тем самым позволяя выполнять операции другим потокам,
+                                                             // до тех пор, пока на том же мониторе не будет вызван метод notify()
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             break;
                         }
                     }
                 }
-                task = taskQueue.poll();                      // берем следующее задание
 
+                task = taskQueue.poll();                      // берем следующее задание
                 if (task != null) {                           // если оно не пусто,
                     task.run();                               // выполняем его
                 }
-                else if (stopProc) {                          // Если была команда остановки
+                else if (stopProc.get()) {                          // Если была команда остановки
                     Thread.currentThread().interrupt();       // Останавливаем поток
                     break;
                 }
-
             }
         }
     }

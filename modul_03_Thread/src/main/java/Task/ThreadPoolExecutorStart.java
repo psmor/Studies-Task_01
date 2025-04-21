@@ -5,9 +5,9 @@ public class ThreadPoolExecutorStart {
     public static void main(String[] args) {
         MainThredPolExecutor mainThredPolExecutor = new MainThredPolExecutor(4);
 
-        for (int i = 0; i < 10; i++) {                   //  Накидываем задачи
+        for (int i = 0; i < 100; i++) {                   //  Накидываем задачи
             int j = i;
-            if (i >= 4) {mainThredPolExecutor.shutdown(); } // Для теста остановки потока
+            if (i >= 40) {mainThredPolExecutor.shutdown(); } // Для теста остановки потока
             mainThredPolExecutor.execute(                // Выполнение задачи
                     () -> UtilsMultiTreading.printMark(j)
             );
