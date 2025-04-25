@@ -24,10 +24,6 @@ public class UserDao {
         this.dataSource = dataSource;
     }
 
-    public UserDao() {
-        this.dataSource = new HikariDataSource().getDataSource();
-    }
-
     //INSERT
     public void insert(Long id, String name) throws SQLException{
         String SQL_QUERY = "INSERT INTO users (id, name) VALUES (?,?)";

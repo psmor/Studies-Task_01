@@ -12,19 +12,34 @@ import java.sql.SQLException;
 // Пул соединений в виде Spring бина
 @Configuration
 public class ConfHikaricp {
-    @Value("jdbc:postgresql://localhost:5432/postgres")
+    @Value("${spring.datasource.url}")
     private String url;
-    @Value("postgres")
+    @Value("${spring.datasource.username}")
     private String userName;
-    @Value("postgres")
+    @Value("${spring.datasource.password}")
     private String password;
-    @Value("org.postgresql.Driver")
+    @Value("${spring.datasource.driver-class-name}")
     private String driverClassName;
-    @Value("10")
+
+    // max количество подключений
+    @Value("${spring.datasource.hikari.max-pool-size}")
     private int maxPoolSize;
+    // Тайм-аут соединения в миллисекундах, в течение которых клиент будет ждать нового соединения из пула.
+    // Он выдаст исключение, SQLExceptionесли в пуле нет доступных соединений.
+    @Value("${spring.datasource.hikari.connection-timeout}")
+    private int connectionTimeout;
+    //  мmin количество бездействующих подключений, которые следует поддерживать в пуле подключений.
+    @Value("${spring.datasource.hikari.min-idle}")
+    private int minIdle;
+    // max время, в течение которого соединение может оставаться бездействующим в пуле, прежде чем оно будет удалено.
+    @Value("${spring.datasource.hikari.idle-timeout}")
+    private int idleTimeout;
+    // max время, в течение которого соединение может оставаться в пуле, прежде чем оно будет закрыто и заменено новым.
+    @Value("${spring.datasource.hikari.max-lifetime}")
+    private int maxLifetime;
 
     @Bean
-    public DataSource hikariDataSource() throws SQLException {
+    public DataSource dataSource() throws SQLException {
         // получаем параметры коннекта
         HikariDataSource dataSource = new HikariDataSource(); // hikari pool
         dataSource.setJdbcUrl(url);
@@ -32,20 +47,11 @@ public class ConfHikaricp {
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driverClassName);
         dataSource.setMaximumPoolSize(maxPoolSize);
-        dataSource.setConnectionTimeout(20000); // 20 сек.
-        dataSource.setMinimumIdle(5);           // Кол-во открытых соединений изначально
-        dataSource.setMaximumPoolSize(10);      // Общее допустимое соединений в пуле
-        dataSource.setMaxLifetime(900000);      // 15 мин. Max впемя жизни соединения в пуле
+        dataSource.setConnectionTimeout(connectionTimeout);
+        dataSource.setMinimumIdle(minIdle);
+        dataSource.setMinimumIdle(idleTimeout);
+        dataSource.setMaxLifetime(maxLifetime);
 
         return dataSource;
     }
-
-//    @Bean
-//    public Connection getConnection() throws SQLException {
-//        HikariDataSource dataSource = hikariDataSource();
-//
-//        return dataSource.getConnection();  // коннект
-//    }
-
-
 }

@@ -1,5 +1,6 @@
 package service;
 
+import com.zaxxer.hikari.HikariDataSource;
 import config.ConfHikaricp;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,11 @@ import java.util.List;
 
 @Service
 public class UserService {
+    private final DataSource dataSource;
     private final UserDao userDao;
 
-    public UserService() throws SQLException {
-        ConfHikaricp confHikaricp = new ConfHikaricp();
-        DataSource dataSource = confHikaricp.hikariDataSource();
+    public UserService(DataSource dataSource) throws SQLException {
+        this.dataSource = dataSource;
         this.userDao = new UserDao(dataSource);
     }
 
