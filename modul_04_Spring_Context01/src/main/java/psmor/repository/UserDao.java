@@ -1,10 +1,7 @@
-package repository;
+package psmor.repository;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import srtuct.User;
+import psmor.srtuct.User;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -17,7 +14,7 @@ import java.util.List;
 @Repository
 public class UserDao {
 
-    private final DataSource dataSource;
+    final DataSource dataSource;
 
     // Заинжектим DataSource из Config
     public UserDao( DataSource dataSource) {
@@ -26,12 +23,13 @@ public class UserDao {
 
     //INSERT
     public void insert(Long id, String name) throws SQLException{
-        String SQL_QUERY = "INSERT INTO users (id, name) VALUES (?,?)";
+        String SQL_QUERY = "INSERT INTO users (id, username) VALUES (?,?)";
         Connection con = dataSource.getConnection();                // Открываем коннет
         PreparedStatement pst = con.prepareStatement(SQL_QUERY);    // Формируем запрос
         pst.setLong(1, id);                           // В запрос добавляем переменные
         pst.setString(2, name);                       // В запрос добавляем переменные
-        ResultSet rs = pst.executeQuery();                          // Выполняем
+        pst.execute();                                              // Выполняем
+        con.close();
     }
 
     // SELECT всех записей
@@ -46,11 +44,10 @@ public class UserDao {
         users = new ArrayList<>();
         User user;
         while (rs.next()) {
-            user = new User();
-            user.setId(rs.getLong("id"));
-            user.setUsername(rs.getString("Bob"));
+            user = new User(rs.getLong("id"), rs.getString("username"));
             users.add(user);
         }
+        con.close();
         return users;
     }
 
@@ -66,23 +63,22 @@ public class UserDao {
         users = new ArrayList<>();
         User user;
         while (rs.next()) {                                             // Соберём ответ в коллекцию
-            user = new User();
-            user.setId(rs.getLong("id"));
-            user.setUsername(rs.getString("Bob"));
+            user = new User(rs.getLong("id"), rs.getString("username"));
             users.add(user);
         }
-
+        con.close();
         return users;
     }
 
     // UPDATE
     public void update(Long id, String name) throws SQLException{
-        String SQL_QUERY = "UPDATE users SET name=? WHERE id = ?";
+        String SQL_QUERY = "UPDATE users SET username=? WHERE id = ?";
         Connection con = dataSource.getConnection();                // Открываем коннет
         PreparedStatement pst = con.prepareStatement(SQL_QUERY);    // Формируем запрос
-        pst.setLong(1, id);                           // В запрос добавляем переменные
-        pst.setString(2, name);                       // В запрос добавляем переменные
-        ResultSet rs = pst.executeQuery();                          // Выполняем
+        pst.setString(1, name);                       // В запрос добавляем переменные
+        pst.setLong(2, id);                           // В запрос добавляем переменные
+        pst.execute();                                             // Выполняем
+        con.close();
     }
 
     // DELETE
@@ -91,7 +87,16 @@ public class UserDao {
         Connection con = dataSource.getConnection();                // Открываем коннет
         PreparedStatement pst = con.prepareStatement(SQL_QUERY);    // Формируем запрос
         pst.setLong(1, id);                           // В запрос добавляем переменные
-        ResultSet rs = pst.executeQuery();                          // Выполняем
+        pst.execute();                                              // Выполняем
+        con.close();
+    }
+
+    public void deleteAll() throws SQLException{
+        String SQL_QUERY = "DELETE FROM users";
+        Connection con = dataSource.getConnection();                // Открываем коннет
+        PreparedStatement pst = con.prepareStatement(SQL_QUERY);    // Формируем запрос
+        pst.execute();                                              // Выполняем
+        con.close();
     }
 }
 

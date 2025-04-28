@@ -1,16 +1,17 @@
-package config;
+package psmor.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 // Пул соединений в виде Spring бина
 @Configuration
+@PropertySource(value = "classpath:application.properties")
 public class ConfHikaricp {
     @Value("${spring.datasource.url}")
     private String url;
@@ -46,6 +47,7 @@ public class ConfHikaricp {
         dataSource.setUsername(userName);
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driverClassName);
+
         dataSource.setMaximumPoolSize(maxPoolSize);
         dataSource.setConnectionTimeout(connectionTimeout);
         dataSource.setMinimumIdle(minIdle);

@@ -1,8 +1,5 @@
-package srtuct;
+package psmor.srtuct;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class User {
     private Long id;
     private String username;
@@ -12,14 +9,19 @@ public class User {
         this.username = username;
     }
 
-    public User() {
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

@@ -1,11 +1,8 @@
-package service;
+package psmor.service;
 
-import com.zaxxer.hikari.HikariDataSource;
-import config.ConfHikaricp;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import repository.UserDao;
-import srtuct.User;
+import psmor.repository.UserDao;
+import psmor.srtuct.User;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -14,10 +11,10 @@ import java.util.List;
 
 @Service
 public class UserService {
-    private final DataSource dataSource;
-    private final UserDao userDao;
+    DataSource dataSource;
+    UserDao userDao;
 
-    public UserService(DataSource dataSource) throws SQLException {
+    public UserService(DataSource dataSource) throws SQLException {  // Заинжектим DataSource из Config
         this.dataSource = dataSource;
         this.userDao = new UserDao(dataSource);
     }
@@ -36,22 +33,6 @@ public class UserService {
             throw new IllegalArgumentException("Ошибка при обращении к БД: "+e);
         }
     }
-
-//    public User selectId(Long id) throws SQLException {
-//        List<User> users  = userDao.selectId(id);
-//        int i = 0;
-//        User user = null;
-//        for(User usr : users){
-//            i++;
-//            user = usr;
-//        }
-//        if (i == 0) {
-//            throw new IllegalArgumentException("Отсутствует пользователь с id="+id);
-//        } else if (i > 1) {
-//            throw new IllegalArgumentException("Найдено более 1-го пользователя с id="+id);
-//        }
-//        return user;
-//    }
 
     public User selectId(Long id) throws SQLException {
 
@@ -83,6 +64,13 @@ public class UserService {
 
     public void delete(Long id) {
         try { userDao.delete(id);
+        } catch ( SQLException e) {
+            throw new IllegalArgumentException("Ошибка при обращении к БД: "+e);
+        }
+    }
+
+    public void deleteAll() {
+        try { userDao.deleteAll();
         } catch ( SQLException e) {
             throw new IllegalArgumentException("Ошибка при обращении к БД: "+e);
         }

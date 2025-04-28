@@ -1,10 +1,11 @@
+package psmor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import service.UserService;
-import srtuct.User;
+import psmor.service.UserService;
+import psmor.srtuct.User;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,21 +14,14 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws SQLException, JsonProcessingException {
         // Создаём Spring Coontext
-//        AnnotationConfigApplicationContext context =
-//                new AnnotationConfigApplicationContext(ConfHikaricp.class);
         AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext(Main.class);   // Падает в BeanCreationException
-        // Exception in thread "main" org.springframework.beans.factory.BeanCreationException:
-        //   Error creating bean with name 'org.springframework.context.annotation.internalAsyncAnnotationProcessor'
-        //     defined in class path resource [org/springframework/scheduling/annotation/ProxyAsyncConfiguration.class]:
-        //       Failed to instantiate [org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor]:
-        //         Factory method 'asyncAdvisor' threw exception with message:
-        //           @EnableAsync annotation metadata was not injected
 
         System.out.println("Старт Spring Context");
-
         ObjectMapper objectMapper = new ObjectMapper();
         UserService userService = context.getBean(UserService.class); // Работаем с контекстом
+
+        userService.deleteAll();
 
         // INSERT
         userService.insert( 1L,"Боб");
@@ -36,7 +30,9 @@ public class Main {
         // SELCT ALL
         List<User> users = userService.selectAll();
         for(User u : users){
+            //System.out.println("1");
             System.out.println(objectMapper.writeValueAsString(u));
+            //System.out.println("2");
         }
 
         // SELECT по id
@@ -53,5 +49,9 @@ public class Main {
         for(User u : users){
             System.out.println(objectMapper.writeValueAsString(u));
         }
+
+        context.close();
+
+        System.out.println("Стоп Spring Context");
     }
 }
