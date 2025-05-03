@@ -18,7 +18,7 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 public class UserService implements CommandLineRunner {
-    UserRepository userRepository;
+    private final UserRepository userRepository;
     ObjectMapper objectMapper;
 
     @Override
