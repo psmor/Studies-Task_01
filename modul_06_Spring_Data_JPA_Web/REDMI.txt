@@ -1,0 +1,9 @@
+Проверку сервиса выполнял в адресной строке браузера.
+
+Показать пользователей (всех, по id):
+http://localhost:8080/user/findall
+http://localhost:8080/user/findid?id=1
+
+Показать продукты (всех, по id):
+http://localhost:8080/product/findall
+http://localhost:8080/product/findid?id=1
