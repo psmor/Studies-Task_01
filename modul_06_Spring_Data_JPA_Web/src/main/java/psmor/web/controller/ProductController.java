@@ -2,24 +2,23 @@ package psmor.web.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import psmor.web.entity.Product;
+import psmor.web.dto.ProductDto;
+import psmor.web.dto.ProductDtoResp;
 import psmor.web.service.ProductService;
 
-import java.util.List;
-
 @RestController
-@RequestMapping(value = "product")
+@RequestMapping(value = "/v1/product")
 @AllArgsConstructor
 public class ProductController {
     private final ProductService productService;
 
     @GetMapping(path = "findall")
-    public List<Product> getAll(){
-        return productService.selectAll();
+    public ProductDtoResp getAll(){
+        return productService.selectAllDto();
     }
 
     @GetMapping(path = "findid")
-    public Product getId(@RequestParam("id") Long id) {
-        return productService.selectId(id);
+    public ProductDto getId(@RequestParam("id") Long id) {
+        return productService.selectIdDto(id);
     }
 }

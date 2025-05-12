@@ -3,42 +3,64 @@ package psmor.web.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import psmor.web.dto.UserDto;
+import psmor.web.dto.UserDtoResp;
 import psmor.web.entity.Product;
 import psmor.web.repository.UserRepository;
 import psmor.web.entity.User;
+import psmor.web.utils.MappingUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+    private final MappingUtils mappingUtils;
 
     public void insert(String name, List<Product> product) {
         userRepository.save(new User(null, name, product));
     }
 
-    public List<User> selectAll() {
+    public UserDtoResp selectAllDto() {
+        // Найдём пользователей
         List<User> users = userRepository.findAll();
-        return users;
+        // Запишу лог
+        log.info("JSON: "+toJson(users));
+        // Собираем DTO из пользователей
+        List<UserDto> usersDto = new ArrayList<>();
+        for (User user : users) {
+            usersDto.add(mappingUtils.userToUserDto(user));
+        }
+        return new UserDtoResp(usersDto);
     }
+
 
     public User selectId(Long id) {
         Optional<User> res = userRepository.findById(id);
-        User user = null;
+        User user = new User();
         if ( res.isPresent() ){
             user = res.get();  // Так можно делать? Ниже в selectUsername() сделал иначе.
         } else {
             log.info("Пользователь с id="+id+" не найден");
         }
+
+        // Запишу лог
+        log.info("JSON: "+toJson(user));
+
         return user;
+    }
+
+    public UserDto selectIdDto(Long id) {
+        User user = selectId(id);
+        return mappingUtils.userToUserDto(user);
     }
 
     public User selectUsername(String username){
@@ -64,11 +86,21 @@ public class UserService {
     }
 
     // Получаем JSON
-    public String toJson (User user) throws JsonProcessingException {
-        return (objectMapper.writeValueAsString(user));
+    public String toJson (User user) {
+        try {
+            return objectMapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            return ("Ошибка преобразования в JSON:"+e.toString());
+        }
+
     }
-    public String toJson (List<User> user) throws JsonProcessingException {
-        return (objectMapper.writeValueAsString(user));
+    public String toJson (List<User> user) {
+        try {
+            return objectMapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            return ("Ошибка преобразования в JSON:"+e.toString());
+        }
+
     }
 
 }

@@ -1,6 +1,11 @@
 server:
+  servlet:
+    context-path: "/payments-app"         # Нужно для разделения обращений к сервисам, крутящимся на одном порту
+                                          # Обращение будет выглядеть так: http://localhost:8080/payments-core
   port: 8080
 spring:
+  application:
+    name: payments-core                   # Имя приложения
   datasource:                             # Параметры подключения к БД
     url: jdbc:postgresql://localhost:5432/db_jpa2?characterEncoding=utf-8
     username: postgres

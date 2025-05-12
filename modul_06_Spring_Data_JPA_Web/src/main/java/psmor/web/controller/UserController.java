@@ -2,23 +2,21 @@ package psmor.web.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import psmor.web.entity.User;
+import psmor.web.dto.UserDto;
+import psmor.web.dto.UserDtoResp;
 import psmor.web.service.UserService;
 
-import java.util.List;
-
 @RestController
-@RequestMapping(value = "user")
+@RequestMapping(value = "/v1/user")
 @AllArgsConstructor
 public class UserController {
     private final UserService userService;
 
     @GetMapping(path = "findall")
-    public List<User> getAll(){
-        System.out.println("Select * from User");
-        return userService.selectAll();
+    public UserDtoResp getAll(){
+        return userService.selectAllDto();
     }
 
     @GetMapping(path = "findid")
-    public User getId(@RequestParam("id") Long id) { return userService.selectId(id); }
+    public UserDto getId(@RequestParam("id") Long id) { return userService.selectIdDto(id); }
 }
