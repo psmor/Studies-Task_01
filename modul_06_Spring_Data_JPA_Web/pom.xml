@@ -27,17 +27,11 @@
 
         <!-- Для WEB - @RestController -->
         <!-- spring web подтянет транзитивно: Сериализация/Десериализация - ObjectMapper <artifactId>jackson-core</artifactId>  - -->
+        <!--                                  Логирование log4j2 <artifactId>spring-boot-starter-log4j2</artifactId>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>3.4.4</version>
-        </dependency>
-
-        <!-- Логирование log4j2 ) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-            <version>3.4.3</version>
         </dependency>
 
         <!-- БД> -->
@@ -45,13 +39,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.5</version>
-        </dependency>
-
-        <!-- Сериализация/Десериализация - ObjectMapper -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.18.3</version>
         </dependency>
 
         <!-- Lombok: @Data, @Getter, @Setter, ... - ObjectMapper -->

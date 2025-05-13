@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import psmor.web.dto.UserDto;
 import psmor.web.dto.UserDtoResp;
@@ -44,10 +45,11 @@ public class UserService {
 
 
     public User selectId(Long id) {
+        // Ниже в selectUsername() сделал в одну строку. Это оставил для примера
         Optional<User> res = userRepository.findById(id);
         User user = new User();
         if ( res.isPresent() ){
-            user = res.get();  // Так можно делать? Ниже в selectUsername() сделал иначе.
+            user = res.get();
         } else {
             log.info("Пользователь с id="+id+" не найден");
         }
@@ -64,7 +66,8 @@ public class UserService {
     }
 
     public User selectUsername(String username){
-        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
+        //return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
+        return userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("Пользователь с именем "+username+" не найден"));
     }
 
     public void update(Long id, String name) {
