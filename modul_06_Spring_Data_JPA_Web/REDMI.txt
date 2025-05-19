@@ -1,0 +1,11 @@
+Проверку сервиса выполнял в адресной строке браузера.
+
+Показать пользователей (всех, по id):
+http://localhost:8080/payments-app/v1/user
+http://localhost:8080/payments-app/v1/user/id?id=1
+http://localhost:8080/payments-app/v1/user/1
+
+Показать продукты (всех, по id):
+http://localhost:8080/payments-app/v1/product
+http://localhost:8080/payments-app/v1/product/id?id=1
+http://localhost:8080/payments-app/v1/product/1
