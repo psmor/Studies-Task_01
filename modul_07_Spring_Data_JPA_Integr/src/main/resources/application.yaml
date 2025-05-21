@@ -1,8 +1,8 @@
 server:
   servlet:
-    context-path: "/payments-app"         # Нужно для разделения обращений к сервисам, крутящимся на одном порту
-                                          # Обращение будет выглядеть так: http://localhost:8080/payments-app
-  port: 8080
+    context-path: "/payments-core"         # Нужно для разделения обращений к сервисам, крутящимся на одном порту
+                                          # Обращение будет выглядеть так: http://localhost:8080/payments-core
+  port: 8081
 spring:
   application:
     name: payments-core                   # Имя приложения
@@ -26,12 +26,13 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none                     # none / create-drop
-  liquibase:
-    enabled: true                              # true / false
-    url: jdbc:postgresql://localhost:5432/db_jpa2
-    change-log: classpath:/db/changelog/init-changelog.xml
-    liquibase-schema: public
-    default-schema: public
-    user: postgres
-    password: 3311
-
+#  liquibase:
+#    enabled: true                              # true / false
+#    url: jdbc:postgresql://localhost:5432/db_jpa2
+#    change-log: classpath:/db/changelog/init-changelog.xml
+#    liquibase-schema: public
+#    default-schema: public
+#    user: postgres
+#    password: 3311
+integration:
+  url: http://localhost:8080/payments-app/v1/product
