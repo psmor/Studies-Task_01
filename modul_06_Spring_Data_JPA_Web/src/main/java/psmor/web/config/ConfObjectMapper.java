@@ -10,7 +10,7 @@ public class ConfObjectMapper {
     @Bean       //  Для его использования нужно вызывать:
     public ObjectMapper objectMapper(){
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE); // при выводе в JSON строку оборачивает в имя класса
+        //objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE); // при выводе в JSON строку оборачивает в имя класса
         return objectMapper;
     }
 }
